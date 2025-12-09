@@ -1,0 +1,56 @@
+{
+  "name": "@devjskit/react-intl-rspack",
+  "version": "0.1.0-alpha.0",
+  "license": "MIT",
+  "description": "@devjskit/react-intl-rspack is a boilerplate for creating React Intl applications using Rspack as the bundler.",
+  "author": "Billgo <hi@billgo.me>",
+  "bugs": "https://github.com/devjskit/react-intl-rspack/issues",
+  "repository": "git+ssh://git@github.com:devjskit/react-intl-rspack.git",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      },
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "./*": "./*"
+  },
+  "scripts": {
+    "prepublishOnly": "bun run build",
+    "build": "bunx rimraf dist && bunx tsup",
+    "start": "bun run --watch examples/index.ts"
+  },
+  "dependencies": {
+    "glob": "^13.0.0",
+    "react-intl": "^7.1.14"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.8",
+    "@devjskit/biome-config": "^0.2.1",
+    "@rsbuild/core": "^1.6.13",
+    "@types/bun": "^1.3.4",
+    "@types/node": "^24.10.2",
+    "@types/web": "^0.0.299",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "@rsbuild/core": "*",
+    "react-intl": "*"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  }
+}
