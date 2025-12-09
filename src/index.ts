@@ -22,7 +22,7 @@ export function ReactIntlRspack(userOptions: ReactIntlRspackOptions = {}) {
     languages: userOptions.languages ?? ["en", "zh"],
     prefix: userOptions.prefix ?? "",
     debug: userOptions.debug ?? false,
-    generatedI18nFile: userOptions.generatedI18nFile ?? "src/i18n.gen.tsx",
+    generatedI18nFile: userOptions.generatedI18nFile ?? "src/index.i18n.tsx",
   };
 
   return {
