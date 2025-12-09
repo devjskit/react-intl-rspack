@@ -13,7 +13,7 @@ async function getMatchingFiles(pattern: string, cwd: string, debug?: boolean): 
     if (debug) {
       console.log(`[i18n] matched ${files.length} file(s) with pattern "${pattern}" from "${cwd}"`);
       if (files.length > 0) {
-        console.log(`[i18n] files:`, files);
+        console.log("[i18n] files:", files);
       }
     }
 
@@ -39,7 +39,7 @@ const createLangs = (prefix: string, values: LangsMap): LangsMap => {
 };
 
 const removePrefix = <T extends Record<string, any>>(obj: T): Omit<T, "$prefix"> => {
-  const { $prefix: _, ...newObj } = obj;
+  const { $prefix: _ignored, ...newObj } = obj;
   return newObj;
 };
 
@@ -115,6 +115,31 @@ const sortObjectByKeys = (obj: LangsMap): LangsMap => {
   return sortedObj;
 };
 
+// ⭐ 核心：只有内容变化才写文件
+async function writeJsonIfChanged(filePath: string, data: unknown, debug?: boolean): Promise<boolean> {
+  const next = JSON.stringify(data, null, 2) + "\n";
+
+  try {
+    const old = await readFile(filePath, "utf-8");
+    if (old === next) {
+      if (debug) {
+        console.log(`[i18n] ${filePath} unchanged, skip writing`);
+      }
+      return false;
+    }
+  } catch {
+    // file does not exist or cannot be read; treat as changed
+  }
+
+  await writeFile(filePath, next, "utf-8");
+
+  if (debug) {
+    console.log(`[i18n] Wrote ${filePath}`);
+  }
+
+  return true;
+}
+
 export type GenerateLanguageFilesOptions = {
   cwd: string;
   pattern: string;
@@ -153,9 +178,6 @@ export const generateLanguageFiles = async (opts: GenerateLanguageFilesOptions) 
 
   for (const lang of Object.keys(sortedMergedLangs)) {
     const filePath = join(outputDir, `${lang}.json`);
-    await writeFile(filePath, JSON.stringify(sortedMergedLangs[lang], null, 2), "utf-8");
-    if (debug) {
-      console.log(`[i18n] Wrote ${lang} -> ${filePath}`);
-    }
+    await writeJsonIfChanged(filePath, sortedMergedLangs[lang], debug);
   }
 };

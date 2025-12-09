@@ -1,6 +1,6 @@
 {
   "name": "@devjskit/react-intl-rspack",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.1",
   "license": "MIT",
   "description": "@devjskit/react-intl-rspack is a rspack plugin for creating langs and i18n index file.",
   "author": "Billgo <hi@billgo.me>",

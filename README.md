@@ -64,12 +64,14 @@ export default {
 ```json
 {
   "$prefix": "Meta",
-  "title": "Hello World",
-  "description": "This is a test"
+  "default": {
+    "title": "Hello World",
+    "description": "This is a test"
+  }
 }
 ```
 
-### Generated import/export name:
+### Generated import/export name
 
 ``` tsx
 MetaJson → MetaI18n

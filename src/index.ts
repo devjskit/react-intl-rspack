@@ -1,8 +1,8 @@
 import path from "node:path";
 import type { Compiler } from "@rspack/core";
 import { globSync } from "glob";
-import { generateLanguageFiles } from "./gen-files-core";
-import { generateRootI18nFile } from "./gen-i18n-file";
+import { generateLanguageFiles } from "./generateLanguageFiles";
+import { generateRootI18nFile } from "./generateRootI18nFile";
 
 export type ReactIntlRspackOptions = {
   pattern?: string;
