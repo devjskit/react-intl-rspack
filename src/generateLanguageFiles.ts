@@ -1,14 +1,15 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { glob } from "glob";
+import { type GlobPattern, getLocalNamespace, getMessageId, joinNamespace, normalizePattern } from "./namespace";
 
 type Locale = string;
 type Messages = Record<string, string>;
 type LangsMap = Record<Locale, Messages>;
 
-async function getMatchingFiles(pattern: string, cwd: string, debug?: boolean): Promise<string[]> {
+async function getMatchingFiles(pattern: GlobPattern, cwd: string, debug?: boolean): Promise<string[]> {
   try {
-    const files = await glob(pattern, { nodir: true, cwd });
+    const files = (await glob(normalizePattern(pattern), { nodir: true, cwd })).sort();
 
     if (debug) {
       console.log(`[i18n] matched ${files.length} file(s) with pattern "${pattern}" from "${cwd}"`);
@@ -30,7 +31,7 @@ const createLangs = (prefix: string, values: LangsMap): LangsMap => {
     const prefixed: Messages = {};
 
     for (const [key, value] of Object.entries(source)) {
-      prefixed[`${prefix}.${key}`] = value;
+      prefixed[getMessageId(prefix, key)] = value;
     }
 
     acc[lang] = prefixed;
@@ -67,13 +68,11 @@ const extractLangs = async (absFilePath: string, relFilePath: string, languages:
     const fileContent = await readFile(absFilePath, "utf-8");
     const jsonContent = JSON.parse(fileContent);
 
-    const srcRelPath = relFilePath.replace(/^src[\\/]/, "");
-    const middle = jsonContent?.$prefix ? jsonContent.$prefix : dirname(srcRelPath).replace(/\\/g, "/");
-
     const rawValues = jsonContent?.$prefix ? removePrefix(jsonContent) : jsonContent;
     const merged = mergeWithDefault(rawValues, languages);
 
-    const prefixKey = prefix ? `${prefix}/${middle}` : middle;
+    const localNamespace = getLocalNamespace(relFilePath, jsonContent?.$prefix);
+    const prefixKey = joinNamespace(prefix, localNamespace);
 
     if (debug) {
       console.log(`[i18n] process file: ${relFilePath}`);
@@ -142,7 +141,7 @@ async function writeJsonIfChanged(filePath: string, data: unknown, debug?: boole
 
 export type GenerateLanguageFilesOptions = {
   cwd: string;
-  pattern: string;
+  pattern: GlobPattern;
   outputDir: string;
   languages: string[];
   prefix?: string;

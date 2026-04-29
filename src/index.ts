@@ -3,9 +3,10 @@ import type { Compiler } from "@rspack/core";
 import { globSync } from "glob";
 import { generateLanguageFiles } from "./generateLanguageFiles";
 import { generateRootI18nFile } from "./generateRootI18nFile";
+import type { GlobPattern } from "./namespace";
 
 export type ReactIntlRspackOptions = {
-  pattern?: string;
+  pattern?: GlobPattern;
   destination?: string;
   languages?: string[];
   prefix?: string;
@@ -46,6 +47,7 @@ export function ReactIntlRspack(userOptions: ReactIntlRspackOptions = {}) {
           cwd: context,
           languages: options.languages,
           output: options.generatedI18nFile,
+          prefix: options.prefix,
           debug: options.debug,
         });
       };
