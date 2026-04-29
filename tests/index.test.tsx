@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { generateLanguageFiles } from "../src/generateLanguageFiles";
 import { generateRootI18nFile } from "../src/generateRootI18nFile";
+import { ReactIntlRspack } from "../src/index";
 
 async function createFixtureProject(): Promise<string> {
   const cwd = await mkdtemp(join(tmpdir(), "react-intl-rspack-"));
@@ -108,6 +109,7 @@ test("generates a root i18n module whose message ids match language file namespa
     expect(content).toContain(`  "en-US"?: Record<string, string>;`);
     expect(content).toContain(`  "zh-CN"?: Record<string, string>;`);
     expect(content).toContain(`acc[key] = { id: prefix ? \`\${prefix}.\${key}\` : key, defaultMessage: value };`);
+    expect(content).toContain(`return keys.includes(name) && <FormattedMessage {...defineMessages(messages)[name]} {...props} />;`);
     expect(content).toContain(`import AppJson from "./app.i18n.json";`);
     expect(content).toContain(`import HeaderJson from "./components/header/header.i18n.json";`);
     expect(content).toContain(`import MetaJson from "./meta.i18n.json";`);
@@ -156,6 +158,44 @@ test("does not add a leading dot to ids for top-level i18n files without a prefi
     );
 
     expect(await readText(cwd, "src/i18n.gen.tsx")).toContain(`export const AppI18n = createI18n({ ...AppJson, $prefix: "" });`);
+  } finally {
+    await rm(cwd, { recursive: true, force: true });
+  }
+});
+
+test("uses en-US and zh-CN as default plugin languages", async () => {
+  const cwd = await createFixtureProject();
+
+  try {
+    let beforeCompile: (() => Promise<void>) | undefined;
+
+    const plugin = ReactIntlRspack({
+      pattern: "src/**/*.i18n.json",
+      prefix: "app",
+    });
+
+    plugin.apply({
+      options: { context: cwd },
+      hooks: {
+        beforeCompile: {
+          tapPromise: (_name: string, callback: () => Promise<void>) => {
+            beforeCompile = callback;
+          },
+        },
+        afterCompile: {
+          tap: () => {},
+        },
+      },
+    } as any);
+
+    await beforeCompile?.();
+
+    expect(await readText(cwd, "langs/en-US.json")).toContain(`"app.cta": "Go"`);
+    expect(await readText(cwd, "langs/zh-CN.json")).toContain(`"app/components/header.title": "Header zh"`);
+
+    const rootI18n = await readText(cwd, "src/i18n.gen.tsx");
+    expect(rootI18n).toContain(`  "en-US"?: Record<string, string>;`);
+    expect(rootI18n).toContain(`  "zh-CN"?: Record<string, string>;`);
   } finally {
     await rm(cwd, { recursive: true, force: true });
   }

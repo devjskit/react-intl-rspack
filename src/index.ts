@@ -20,10 +20,10 @@ export function ReactIntlRspack(userOptions: ReactIntlRspackOptions = {}) {
   const options = {
     pattern: userOptions.pattern ?? "src/**/{*.i18n.json,i18n.json}",
     destination: userOptions.destination ?? "langs",
-    languages: userOptions.languages ?? ["en", "zh"],
+    languages: userOptions.languages ?? ["en-US", "zh-CN"],
     prefix: userOptions.prefix ?? "",
     debug: userOptions.debug ?? false,
-    generatedI18nFile: userOptions.generatedI18nFile ?? "src/index.i18n.tsx",
+    generatedI18nFile: userOptions.generatedI18nFile ?? "src/i18n.gen.tsx",
   };
 
   return {

@@ -6,7 +6,7 @@ It provides:
 
 - 🔍 Automatic scanning of `*.i18n.json` and `i18n.json` files
 - 🏗️ Auto-generation of per-language JSON files under `/langs`
-- 🧩 Auto-generation of a single `index.i18n.tsx` runtime entry file
+- 🧩 Auto-generation of a single `i18n.gen.tsx` runtime entry file
 - 🏷️ Consistent message ids based on `$prefix`, file location, and optional global `prefix`
 - 🔄 Safe watch mode with no infinite rebuild loop  
 - ⚛️ A built-in `createMessages` + `createI18n` factory for React/`react-intl`
@@ -18,7 +18,7 @@ This eliminates repetitive manual work and ensures a clean, maintainable i18n st
 ## ✨ Features
 
 - File-based i18n architecture using `.i18n.json` and `i18n.json`
-- Auto-generates a root i18n entry (`index.i18n.tsx` by default)
+- Auto-generates a root i18n entry (`i18n.gen.tsx` by default)
 - Supports multiple languages, including locale names like `en-US` and `zh-CN`
 - Automatic merging and sorting of languages
 - Safe incremental rebuilds — only rewrites files when content changes
@@ -30,12 +30,14 @@ This eliminates repetitive manual work and ensures a clean, maintainable i18n st
 ## 📦 Installation
 
 ```sh
-npm install @devjskit/react-intl-rspack
+npm install @devjskit/react-intl-rspack react-intl@^10
 # or
-yarn add @devjskit/react-intl-rspack
+yarn add @devjskit/react-intl-rspack react-intl@^10
 # or
-pnpm add @devjskit/react-intl-rspack
+pnpm add @devjskit/react-intl-rspack react-intl@^10
 ```
+
+`react-intl` is a required peer dependency. The supported range is `^7.0.0 || ^8.0.0 || ^10.0.0`; v10 is recommended for new projects. `@rsbuild/core` is an optional peer dependency and supports `^1.0.0 || ^2.0.0`.
 
 ---
 
@@ -50,7 +52,7 @@ export default {
       pattern: "src/**/*.i18n.json",
       languages: ["en-US", "zh-CN", "zh-HK"],
       destination: "langs",
-      generatedI18nFile: "src/index.i18n.tsx",
+      generatedI18nFile: "src/i18n.gen.tsx",
       prefix: "app",
       debug: false,
     }),
@@ -87,7 +89,7 @@ MetaJson → MetaI18n
 
 ``` tsx
 src/
-  index.i18n.tsx
+  i18n.gen.tsx
   app.i18n.json
   components/
     header/
@@ -100,7 +102,7 @@ langs/
 
 ---
 
-## ⚙️ Auto-generated `index.i18n.tsx`
+## ⚙️ Auto-generated `i18n.gen.tsx`
 
 The plugin generates:
 
@@ -175,7 +177,7 @@ langs/zh-HK.json
 
 Each language file merges `default` messages with locale-specific overrides and sorts keys for deterministic output.
 
-### 4. Generate `index.i18n.tsx`
+### 4. Generate `i18n.gen.tsx`
 
 Includes imports, types, runtime factories, and module exports.
 
@@ -188,9 +190,9 @@ Includes imports, types, runtime factories, and module exports.
 | Option | Type | Default | Description |
 |--------|------|----------|-------------|
 | `pattern` | `string | string[]` | `"src/**/{*.i18n.json,i18n.json}"` | Files to scan and watch |
-| `languages` | `string[]` | `["en", "zh"]` | Supported languages/locales |
+| `languages` | `string[]` | `["en-US", "zh-CN"]` | Supported languages/locales |
 | `destination` | `string` | `"langs"` | Folder for language outputs |
-| `generatedI18nFile` | `string` | `"src/index.i18n.tsx"` | Generated root file |
+| `generatedI18nFile` | `string` | `"src/i18n.gen.tsx"` | Generated root file |
 | `prefix` | `string` | `""` | Optional global namespace prefix |
 | `debug` | `boolean` | `false` | Log debug output |
 
@@ -199,7 +201,7 @@ Includes imports, types, runtime factories, and module exports.
 ## 🧪 Component Usage Example
 
 ```tsx
-import { MetaI18n } from "../index.i18n";
+import { MetaI18n } from "../i18n.gen";
 
 export function Header() {
   return (
