@@ -6,30 +6,21 @@
   "author": "Billgo <hi@billgo.me>",
   "bugs": "https://github.com/devjskit/react-intl-rspack/issues",
   "repository": "git+ssh://git@github.com:devjskit/react-intl-rspack.git",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "type": "module",
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md"
   ],
+  "sideEffects": false,
   "exports": {
-    ".": {
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.cjs"
-      },
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      }
-    },
-    "./*": "./*"
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
   },
   "scripts": {
-    "prepublishOnly": "bun run build",
-    "build": "bunx rimraf dist && bunx tsup",
-    "start": "bun run --watch examples/index.ts"
+    "build": "bunx rimraf dist && bunx tsdown --config tsdown.config.mts",
+    "test": "bun test",
+    "dev": "tsdown --config-loader unrun --watch"
   },
   "dependencies": {
     "glob": "^13.0.6",
@@ -42,7 +33,7 @@
     "@types/bun": "^1.3.13",
     "@types/node": "^25.6.0",
     "@types/web": "^0.0.347",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.21.10",
     "typescript": "^6.0.3"
   },
   "peerDependencies": {
@@ -52,5 +43,9 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
+  },
+  "inlinedDependencies": {
+    "@rspack/binding": "2.0.1",
+    "@rspack/core": "2.0.1"
   }
 }
