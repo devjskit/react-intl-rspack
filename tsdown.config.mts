@@ -4,6 +4,9 @@ export default defineConfig({
   entry: {
     index: "src/index.ts",
   },
+  deps: {
+    neverBundle: ["react-intl", "@rsbuild/core"],
+  },
   format: ["esm"],
   sourcemap: false,
   treeshake: true,

@@ -40,12 +40,12 @@
     "@rsbuild/core": "*",
     "react-intl": "*"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/",
-    "access": "public"
-  },
   "inlinedDependencies": {
     "@rspack/binding": "2.0.1",
     "@rspack/core": "2.0.1"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   }
 }
